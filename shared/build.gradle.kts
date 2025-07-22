@@ -23,6 +23,8 @@ kotlin {
             // put your Multiplatform dependencies here
             implementation(libs.ktor.server.core)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.serialization.json.v181) // knav
+            implementation(libs.kotlinx.serialization.core)
 
         }
         commonTest.dependencies {

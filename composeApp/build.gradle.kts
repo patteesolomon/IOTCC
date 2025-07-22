@@ -34,6 +34,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.navigation.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -51,6 +52,8 @@ kotlin {
         }
     }
 }
+
+
 
 android {
     namespace = "org.example.project"
@@ -77,17 +80,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
 }
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.collections)
-    debugImplementation(compose.uiTooling)
-    implementation(libs.androidx.navigation.compose) // knav
+    implementation(libs.kotlinx.serialization.json.v181)
     implementation(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.mongodb.driver.sync)
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine")
-    implementation("org.mongodb:bson-kotlinx")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation(libs.mongodb.driver.bom)
+    debugImplementation(compose.uiTooling)
 }
 

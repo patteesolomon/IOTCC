@@ -12,24 +12,27 @@ androidx-lifecycle = "2.9.1"
 androidx-testExt = "1.2.1"
 bsonRecordCodec = "5.5.1"
 composeMultiplatform = "1.8.2"
+dotenvKotlin = "6.5.1"
 junit = "4.13.2"
 kotlin = "2.2.0"
-kotlinxDatetime = "0.6.1"
+kotlinxDatetime = "0.7.1"
 kotlinxSerializationCore = "1.9.0"
 kotlinxSerializationJson = "1.9.0"
-ktor = "3.2.1"
+ktor = "3.2.2"
 ktorServerCore = "3.2.2"
-ktorServerCoreVersion = "3.2.1"
 ktorServerNetty = "3.2.2"
 logback = "1.5.18"
 identityJvm = "202411.1"
+mongodbDriverBom = "5.5.1"
 mongodbDriverSync = "5.5.1"
 navigationCompose = "2.9.2"
-collections = "28.0.0"
+navigationComposeVersion = "2.9.0-beta03"
 
 [libraries]
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+bson-kotlinx = { module = "org.mongodb:bson-kotlinx" }
 bson-record-codec = { module = "org.mongodb:bson-record-codec", version.ref = "bsonRecordCodec" }
+dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -43,7 +46,7 @@ androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:life
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-json-v181 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktorServerCore" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktorServerNetty" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
@@ -51,10 +54,13 @@ ktor-serverCoreJVM = { module = "io.ktor:ktor-server-core-jvm", version.ref = "k
 ktor-serverNettyJVM = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
+mongodb-bson-kotlinx = { module = "org.mongodb:bson-kotlinx" }
+mongodb-driver-bom = { module = "org.mongodb:mongodb-driver-bom", version.ref = "mongodbDriverBom" }
+mongodb-driver-kotlin-extensions = { module = "org.mongodb:mongodb-driver-kotlin-extensions" }
 mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodbDriverSync" }
-collections = { group = "com.android.support", name = "collections", version.ref = "collections" }
 mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine" }
 mongodb-mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

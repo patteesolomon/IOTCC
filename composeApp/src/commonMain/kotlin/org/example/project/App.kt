@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 @Composable
 @Preview
 
@@ -43,6 +43,10 @@ fun App() {
                 AnimatedVisibility(showContent) {
                     // seeing if all connections are stable
                     // if not you can start them here or goto config
+                    var mcc = MongoConnection().run()
+                    Column {
+                        Text(mcc);
+                    }
                 }
             }
             Button(onClick = { showContent = !showContent }) {
