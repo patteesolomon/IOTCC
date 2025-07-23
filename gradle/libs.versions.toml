@@ -27,6 +27,7 @@ mongodbDriverBom = "5.5.1"
 mongodbDriverSync = "5.5.1"
 navigationCompose = "2.9.2"
 navigationComposeVersion = "2.9.0-beta03"
+navigationFragmentKtx = "2.9.2"
 
 [libraries]
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -61,6 +62,7 @@ mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref 
 mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine" }
 mongodb-mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

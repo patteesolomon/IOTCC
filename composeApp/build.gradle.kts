@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json.v181)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.mongodb.driver.bom)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(compose.uiTooling)
 }
 
