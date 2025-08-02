@@ -3,141 +3,184 @@ package org.example.project
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import kotlinx.coroutines.CoroutineScope
-
+import kotlinx.serialization.Serializable
 
 //TODO: make the route pages
-@OptIn(ExperimentalSharedTransitionApi::class)
 class MainActivity : ComponentActivity() {
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.setContent {
-            val navController = rememberNavController()
-            NavHost(
-                navController = navController,
-                startDestination = MainMenu
-            ) {
-                composable<MainMenu> {
-                    val args = it.toRoute<MainMenu>()
-                    Column(
-                        modifier = Modifier
-                            .safeContentPadding()
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Button(onClick = { navController.navigate(Commands) }) {
-                            TabLayout("Commands", Color.Cyan, 12.sp).tab()
-                        }
-                        Button(onClick = { navController.navigate(ConnectionT) }) {
-                            TabLayout("Connection", Color.Yellow, 12.sp).tab()
-                        }
-                        Button(onClick = { navController.navigate(DataBased) }) {
-                            //contentColorFor(Color.Blue)
-//                      MongoMenu()
-                            TabLayout("DataBased", Color.Green, 12.sp).tab()
-                        }
-                        Button(onClick = { navController.navigate(Config) }) {
-                            //contentColorFor(Color.Blue)
-                            TabLayout("Config", Color.LightGray, 12.sp).tab()
-                        }
-                    }
-                }
-                composable<Commands> {
-                    val args = it.toRoute<Commands>()
-                    Column(
-                        modifier = Modifier
-                            .safeContentPadding()
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Button(onClick = { navController.navigate(MainMenu) }) {
-                            TabLayout("MainMenu", Color.Red, 12.sp).tab()
-                        }
+        enableEdgeToEdge()
 
-                    }
-                }
-                composable<ConnectionT> {
-                    val args = it.toRoute<ConnectionT>()
-                    Column(
-                        modifier = Modifier
-                            .safeContentPadding()
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box {
-                            Text("You are a legend among your men.")
-                        }
+        // Retrieve NavController from the NavHostFragment
+//        val navHostFragment = supportFragmentManager
+//            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // Set up the action bar for use with the NavController
+//        setupActionBarWithNavController(navController)
+        setContent {
+            AppTheme { // define and route each to their own specific menus
+                val navController = rememberNavController()
+                var showContent by remember { mutableStateOf(false) }
+                NavHost(navController, startDestination = MainMenu)
+                {
+
+                    composable<MainMenu> {
+                        val args = it.toRoute<MainMenu>()
+                        Column(
+                            modifier = Modifier
+                                .safeContentPadding()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                         Button(onClick = { navController.navigate(MainMenu) }) {
+                            // contentColorFor(Color.Blue)
                             TabLayout("MainMenu", Color.Red, 12.sp).tab()
+                            AnimatedVisibility(showContent) {
+                                // command menu form for sending a command
+                            }
+                        }
+                    }
+                        }
+                    composable<Commands> {
+                        val args = it.toRoute<Commands>()
+                        Column(
+                            modifier = Modifier
+                                .safeContentPadding()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                        Button(onClick = { navController.navigate(Commands) }) {
+                            // contentColorFor(Color.Blue)
+                            TabLayout("Commands", Color.Cyan, 12.sp).tab()
+                            AnimatedVisibility(showContent) {
+                                // command menu form for sending a command
+                            }
+                        }
+                    }
+                    }
+
+                    composable<ConnectionT> {
+                        val args = it.toRoute<ConnectionT>()
+                        Column(
+                            modifier = Modifier
+                                .safeContentPadding()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                        Button(onClick = { navController.navigate(ConnectionT)}) {
+                            //contentColorFor(Color.Blue)
+                            TabLayout("Connection", Color.Yellow, 12.sp).tab()
+                            AnimatedVisibility(showContent) {
+                                // seeing if all connections are stable
+                                // if not you can start them here or goto config
+                                var mcc = MongoConnection().run()
+                                Column {
+                                    Text(mcc);
+                                }
+                            }
+                        }
+                        }
+                    }
+                    composable<DataBased> {
+                        val args = it.toRoute<DataBased>()
+                        Column(
+                            modifier = Modifier
+                                .safeContentPadding()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Button(onClick = { navController.navigate(DataBased) }) {
+                                //contentColorFor(Color.Blue)
+                                TabLayout("DataBased", Color.Green, 12.sp).tab()
+                                AnimatedVisibility(showContent) {
+                                    //See whats in the command database
+                                    // see whats saved to the tower(NOT THE MONGODB)
+                                }
+                            }
+                        }
+                    }
+                    composable<Config>{
+                        val args = it.toRoute<Config>()
+                        Column(
+                            modifier = Modifier
+                                .safeContentPadding()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Button(onClick = { showContent = !showContent }) {
+                                //contentColorFor(Color.Blue)
+                                TabLayout("Config", Color.LightGray, 12.sp).tab()
+                                AnimatedVisibility(showContent) {
+                                    // change api values in the .env
+                                    // change app options
+                                }
+                            }
                         }
                     }
                 }
-                composable<DataBased> {
-                    val args = it.toRoute<DataBased>()
-                    Column(
-                        modifier = Modifier
-                            .safeContentPadding()
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Button(onClick = { navController.navigate(MainMenu) }) {
-                            TabLayout("MainMenu", Color.Red, 12.sp).tab()
-                        }
-                    }
-                }
-                composable<Config> {
-                    val args = it.toRoute<Config>()
-                    Column(
-                        modifier = Modifier
-                            .safeContentPadding()
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Button(onClick = { navController.navigate(MainMenu) }) {
-                            TabLayout("MainMenu", Color.Red, 12.sp).tab()
-                        }
-                    }
-                }
-            }
-            LaunchedEffect(key1 = navController) {
-                onNavHostReady(navController)
+
             }
         }
     }
 
-    private fun CoroutineScope.onNavHostReady(controller: NavHostController) {
-        controller.run { navigate(MainMenu) }
+    fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp()// || super.onSupportNavigateUp()
     }
 }
-
 
 @Preview
 @Composable
 fun AppAndroidPreview() {
     App()
 }
+@Serializable
+data class OptionsMenu(
+    val name: String?
+)
+
+@Serializable
+object Commands
+
+@Serializable
+data class ConnectionT(
+    val name : String?,
+    val pathr : String
+)
+
+@Serializable
+object MainMenu
+
+    @Serializable
+    object  DataBased
+
+@Serializable
+object Config
