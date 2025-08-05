@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
+
 }
 
 kotlin {
@@ -34,7 +35,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.navigation.compose)
+            implementation(libs.androidx.navigation.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -83,9 +84,11 @@ android {
 
 }
 dependencies {
+    implementation(libs.mongodb.driver.core)
+    implementation("org.mongodb:mongodb-driver-kotlin-sync:4.11.1")
+    implementation(libs.bson)
     implementation(libs.kotlinx.serialization.json.v181)
     implementation(libs.kotlinx.serialization.core)
-    implementation(libs.mongodb.driver.bom)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(compose.uiTooling)
 }
