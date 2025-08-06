@@ -13,10 +13,10 @@ import androidx.compose.ui.unit.Dp
 
 private val gegg: Color
     get() {
-        return Color(3225097)
+        return Color(0xFF11EA40)
     }
 @Composable
-public fun MongoMenu() {
+public fun MongoMenu(function: () -> Unit) {
     Layout({
         Box(Modifier.layoutId("border")) { border() }
         Box(Modifier.layoutId("border2")) { border() }

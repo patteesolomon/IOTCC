@@ -28,7 +28,7 @@ fun SharedTransitionScope.ListScreen(
     onItemClick: (Int, String) -> Unit
 ) {
     val drawables = listOf(
-        ConnectionT,
+        Connections,
         Config,
         Commands,
         DataBased

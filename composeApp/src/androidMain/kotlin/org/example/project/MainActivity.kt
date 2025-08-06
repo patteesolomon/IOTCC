@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import org.project.iotcc.MongoDBConnection
 
 //TODO: make the route pages
 class MainActivity : ComponentActivity() {
@@ -46,7 +47,6 @@ class MainActivity : ComponentActivity() {
                 var showContent by remember { mutableStateOf(false) }
                 NavHost(navController, startDestination = MainMenu)
                 {
-
                     composable<MainMenu> {
                         val args = it.toRoute<MainMenu>()
                         Column(
@@ -84,9 +84,8 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     }
-
-                    composable<ConnectionT> {
-                        val args = it.toRoute<ConnectionT>()
+                    composable<Connections> {
+                        val args = it.toRoute<Connections>()
                         Column(
                             modifier = Modifier
                                 .safeContentPadding()
@@ -94,15 +93,14 @@ class MainActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.SpaceEvenly,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                        Button(onClick = { navController.navigate(ConnectionT)}) {
+                        Button(onClick = { navController.navigate(Connections)}) {
                             //contentColorFor(Color.Blue)
                             TabLayout("Connection", Color.Yellow, 12.sp).tab()
                             AnimatedVisibility(showContent) {
                                 // seeing if all connections are stable
                                 // if not you can start them here or goto config
-                                var mcc = MongoConnection().run()
                                 Column {
-                                    Text(mcc);
+                                    Text("THIS : " + MongoDBConnection.getMongoClientcl())
                                 }
                             }
                         }
@@ -171,10 +169,7 @@ data class OptionsMenu(
 object Commands
 
 @Serializable
-data class ConnectionT(
-    val name : String?,
-    val pathr : String
-)
+object Connections
 
 @Serializable
 object MainMenu
