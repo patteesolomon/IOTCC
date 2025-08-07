@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.project.iotcc.MongoDBConnection
 
@@ -99,8 +100,9 @@ class MainActivity : ComponentActivity() {
                             AnimatedVisibility(showContent) {
                                 // seeing if all connections are stable
                                 // if not you can start them here or goto config
+                                val cmg= MongoDBConnection().main().toString()
                                 Column {
-                                    Text("THIS : " + MongoDBConnection.getMongoClientcl())
+                                    Text("THIS : $cmg")
                                 }
                             }
                         }
