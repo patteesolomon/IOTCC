@@ -5,33 +5,34 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 
-val CONNECTION_STRING = "mongodb+srv://Kipedo000:bhwYMTusgnMqoRxA@cluster0.rpmloin.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+val CONNECTION_STRING = System.getenv("MONGO_URI")
 
     fun main(args: Array<String>){
         val database: MongoDatabase = getDatabase()
-        runBlocking {
-            addCommand(database)
-        }
+        val loggerParent = LoggerFactory.getLogger("parent")
+        val loggerChild = LoggerFactory.getLogger("parent.child")
+        runBlocking { addCommand(database) }
     }
     fun getDatabase(): MongoDatabase{
         val client = MongoClient.create(connectionString = CONNECTION_STRING)
-        return client.getDatabase(databaseName = "commands")
+        return client.getDatabase(databaseName = "test")
     }
 
 data class CommandInfo(
     @BsonId
     val id: ObjectId,
-    val string: String
+    val command: String
 )
 
 suspend fun addCommand(database: MongoDatabase){
     val info = CommandInfo(
         id = ObjectId(),
-        string = "sudo apt full-upgrade",
+        command = "sudo apt full-upgrade",
     )
     val collection = database.getCollection<CommandInfo>("commands")
     collection.insertOne(info).also {
-        println("Inserted Id -  ${it.insertedId}")
+        println("Inserted Id - ${it.insertedId}")
     }
 }
