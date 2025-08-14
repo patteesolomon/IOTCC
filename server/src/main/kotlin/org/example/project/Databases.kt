@@ -51,75 +51,45 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = true)
-    val cityService = CityService(dbConnection)
-    
+    val commandService = CommandService(dbConnection)
+
     routing {
-    
-        // Create city
-        post("/cities") {
-            val city = call.receive<City>()
-            val id = cityService.create(city)
+
+        // Create command
+        post("/commands") {
+            val command = call.receive<Command>()
+            val id = commandService.create(command)
             call.respond(HttpStatusCode.Created, id)
         }
-    
-        // Read city
-        get("/cities/{id}") {
+
+        // Read command
+        get("/commands/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
             try {
-                val city = cityService.read(id)
-                call.respond(HttpStatusCode.OK, city)
+                val command = commandService.read(id)
+                call.respond(HttpStatusCode.OK, command)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-    
-        // Update city
-        put("/cities/{id}") {
+
+        // Update command
+        put("/commands/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            val user = call.receive<City>()
-            cityService.update(id, user)
+            val user = call.receive<Command>()
+            commandService.update(id, user)
             call.respond(HttpStatusCode.OK)
         }
-    
-        // Delete city
-        delete("/cities/{id}") {
+
+        // Delete command
+        delete("/commands/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            cityService.delete(id)
+            commandService.delete(id)
             call.respond(HttpStatusCode.OK)
         }
     }
     val mongoDatabase = connectToMongoDB()
-    val carService = CarService(mongoDatabase)
-    routing {
-        // Create car
-        post("/cars") {
-            val car = call.receive<Car>()
-            val id = carService.create(car)
-            call.respond(HttpStatusCode.Created, id)
-        }
-        // Read car
-        get("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            carService.read(id)?.let { car ->
-                call.respond(car)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
-        // Update car
-        put("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            val car = call.receive<Car>()
-            carService.update(id, car)?.let {
-                call.respond(HttpStatusCode.OK)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
-        // Delete car
-        delete("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            carService.delete(id)?.let {
-                call.respond(HttpStatusCode.OK)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
-    }
+
     install(Kafka) {
         schemaRegistryUrl = "my.schemaRegistryUrl"
         val myTopic = TopicName.named("my-topic")
