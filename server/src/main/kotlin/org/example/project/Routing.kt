@@ -54,5 +54,27 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
+
+        get("/iotDevices")
+        {
+            // gets all Iot devices
+        }
+
+        get("/robotics")
+        {
+            // get all robots here
+        }
+
+        post("/configSet")
+        {
+            // finish config and post to settings here
+        }
+
+        put("/newIOT"){
+            // new IOT controllable
+        }
+        delete("/iotDevices/:id"){
+            // deletes the iot dev
+        }
     }
 }
