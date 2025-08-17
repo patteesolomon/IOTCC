@@ -3,7 +3,7 @@
 * We need to focus on another app as well as many other well 
 documented and needed things.
 
-* Build the most out of this using the KDE frontend.
+* Build the most out of this using the KDE frontend. < --
 * But also include the repo link here
 * Connect it to the db
 * startup function needed as a startup app
