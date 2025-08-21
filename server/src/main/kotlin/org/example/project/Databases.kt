@@ -228,7 +228,7 @@ fun Application.connectToMongoDB(): MongoDatabase {
     val maxPoolSize = environment.config.tryGetString("db.mongo.maxPoolSize")?.toInt() ?: 20
     val databaseName = environment.config.tryGetString("db.mongo.database.name") ?: "myDatabase"
 
-    val credentials = user?.let { userVal -> password?.let { passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
+    val credentials = user?.let { userVal -> password?.let{ passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
     val uri = "mongodb://$credentials$host:$port/?maxPoolSize=$maxPoolSize&w=majority"
     val mongoClient = MongoClients.create(uri)
     val database = mongoClient.getDatabase(databaseName)

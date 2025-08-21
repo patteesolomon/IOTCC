@@ -1,6 +1,5 @@
 package com.project
-
-import org.h2.engine.User
+import com.project.data.User
 
 interface UserDataSource {
     suspend fun getUserByUsername(username: String): User?

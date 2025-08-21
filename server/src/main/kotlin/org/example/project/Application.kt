@@ -4,20 +4,31 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
-import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoDatabase
+import com.project.data.User
 import io.ktor.server.application.*
 import io.ktor.server.config.tryGetString
-import kotlinx.coroutines.runBlocking
-import org.bson.Document
+import io.ktor.server.netty.EngineMain
+import org.bson.codecs.pojo.annotations.BsonId
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    EngineMain.main(args)
 }
 
 @Suppress("unused")
 fun Application.module() {
+    configureSerialization()
+    configureFrameworks()
+    configureAdministration()
+    configureTemplating()
+    configureDatabases()
+    configureHTTP()
+    configureSecurity()
+    configureRouting()
+}
+
+suspend fun Application.connectToMongoDbII(): MongoDatabase{
     val mongoPw = System.getenv("db.mongo.password")
     val databaseName = environment.config.tryGetString("db.mongo.database.name") ?: "myDatabase"
 
@@ -31,15 +42,10 @@ fun Application.module() {
         .serverApi(serverApi)
         .build()
     // Create a new client and connect to the server
-    val mongoClient = MongoClients.create(mongoClientSettings).getDatabase("ktor-auth")
-    val database = mongoClient
-//    val userDataSource = MongoUserDataSource(database)
-    configureSerialization()
-    configureFrameworks()
-    configureAdministration()
-    configureTemplating()
-    configureDatabases()
-    configureHTTP()
-    configureSecurity()
-    configureRouting()
+    val mongoDatabase = MongoClients.create(mongoClientSettings).getDatabase("ktor-auth")
+
+    val des = MongoUserDataSource(mongoDatabase)
+    des.insertUser(User("Sol","thisTHing", "idex00099u9"))
+    return mongoDatabase
 }
+
