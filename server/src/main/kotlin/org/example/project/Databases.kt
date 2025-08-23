@@ -2,6 +2,7 @@ package com.project
 
 import com.mongodb.client.*
 import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.project.data.User
 import com.ucasoft.ktor.simpleCache.SimpleCache
 import com.ucasoft.ktor.simpleCache.cacheOutput
 import com.ucasoft.ktor.simpleMemoryCache.*
@@ -39,6 +40,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import kotlinx.coroutines.runBlocking
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.random.Random
@@ -46,6 +48,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.rpc.krpc.ktor.server.Krpc
 import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.*
+import org.bson.types.ObjectId
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -220,6 +223,7 @@ fun Application.connectToPostgres(embedded: Boolean): Connection {
  *
  * @returns [MongoDatabase] instance
  * */
+
 fun Application.connectToMongoDB(): MongoDatabase {
     val user = environment.config.tryGetString("db.mongo.user")
     val password = environment.config.tryGetString("db.mongo.password")
@@ -230,12 +234,17 @@ fun Application.connectToMongoDB(): MongoDatabase {
 
     val credentials = user?.let { userVal -> password?.let{ passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
     val uri = "mongodb://$credentials$host:$port/?maxPoolSize=$maxPoolSize&w=majority"
-    val mongoClient = MongoClients.create(uri)
+    val mongoClient = MongoClients.create(/* connectionString = */ uri)
     val database = mongoClient.getDatabase(databaseName)
 
     monitor.subscribe(ApplicationStopped) {
         mongoClient.close()
     }
-
     return database
+}
+
+// doesn't work yet
+suspend fun InsertDoc(mdb : MongoDatabase, yuser : User) {
+    val userInserter = MongoUserDataSource(mdb)
+    userInserter.insertUser(yuser)
 }
