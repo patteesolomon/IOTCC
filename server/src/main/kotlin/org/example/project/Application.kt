@@ -20,11 +20,13 @@ import org.bson.types.ObjectId
 /*
 Set up MongoDB instance with = Docker NOT yet
 Connect with MongoDB ATLAS = done
-Create Ktor project  = done
+Create Ktor project = done
  Import & configure IntelliJ = done
  MongoDB async driver = done
  Prepare models = mostly done
  Connect Ktor with MongoDB
+ setup Exposed
+ setup postgres
 Save documents
 Find documents by ID
 Update documents
@@ -34,14 +36,10 @@ Find documents with sort & pagination
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
-
 }
 
 @Suppress("unused")
 fun Application.module() {
-    val userS = User(ObjectId(), "Sol", "efafef", __v = 0);
-    runBlocking {
-    }
     configureSerialization()
     configureFrameworks()
     configureAdministration()
