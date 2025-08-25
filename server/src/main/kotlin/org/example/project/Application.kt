@@ -24,9 +24,9 @@ Create Ktor project = done
  Import & configure IntelliJ = done
  MongoDB async driver = done
  Prepare models = mostly done
+ setup postgres
  Connect Ktor with MongoDB
  setup Exposed
- setup postgres
 Save documents
 Find documents by ID
 Update documents

@@ -117,7 +117,7 @@ fun Application.configureDatabases() {
         
         // Read user
         get("/users/{id}") {
-            val id = (call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")).toInt()
+            val id: String? = (call.parameters["id"])
             val user = userService.read(id)
             if (user != null) {
                 call.respond(HttpStatusCode.OK, user)
@@ -128,7 +128,7 @@ fun Application.configureDatabases() {
         
         // Update user
         put("/users/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
+            val id: String? = call.parameters["id"]
             val user = call.receive<ExposedUser>()
             userService.update(id, user)
             call.respond(HttpStatusCode.OK)
@@ -136,7 +136,7 @@ fun Application.configureDatabases() {
         
         // Delete user
         delete("/users/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
+            val id = call.parameters["id"]
             userService.delete(id)
             call.respond(HttpStatusCode.OK)
         }
@@ -215,8 +215,3 @@ fun Application.connectToMongoDB(): MongoDatabase {
     return database
 }
 
-// doesn't work yet
-suspend fun InsertDoc(mdb : MongoDatabase, yuser : User) {
-    val userInserter = MongoUserDataSource(mdb)
-    userInserter.insertUser(yuser)
-}
