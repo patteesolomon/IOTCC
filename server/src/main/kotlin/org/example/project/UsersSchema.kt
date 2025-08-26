@@ -1,7 +1,5 @@
 package com.project
 
-import com.project.UserService.Users.id
-import io.github.flaxoos.ktor.server.plugins.kafka.components.toRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
 import org.bson.types.ObjectId
@@ -38,7 +36,7 @@ class UserService(database: Database) {
         TODO()
     }
 
-    suspend fun read(id: ObjectId): ExposedUser? {
+    suspend fun read(id: String?): ExposedUser? {
 //        return dbQuery {
 //            Users.selectAll()
 //                .where { Users.id.equals(id) }
@@ -48,7 +46,7 @@ class UserService(database: Database) {
         TODO()
     }
 
-    suspend fun update(id: ObjectId, user: ExposedUser) {
+    suspend fun update(id: String?, user: ExposedUser) {
 //        dbQuery {
 //            Users.update({ Users.id.equals(id) }) {
 //                it[name] = user.name
@@ -57,7 +55,7 @@ class UserService(database: Database) {
 //        }
     }
 
-    suspend fun delete(id: ObjectId) {
+    suspend fun delete(id: String?) {
 //        dbQuery {
 //            Users.deleteWhere{ Users.id.equals(id) }
 //        }

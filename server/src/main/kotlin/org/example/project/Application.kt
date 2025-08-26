@@ -16,6 +16,8 @@ import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.jetbrains.exposed.sql.Database
+
 
 /*
 Set up MongoDB instance with = Docker NOT yet

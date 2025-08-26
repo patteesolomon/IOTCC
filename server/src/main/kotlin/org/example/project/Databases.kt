@@ -1,6 +1,15 @@
 package com.project
 
 import com.mongodb.client.*
+import com.project.data.AIA
+import com.project.data.BT
+import com.project.data.CSA
+import com.project.data.Config
+import com.project.data.EmulationM
+import com.project.data.InstallType
+import com.project.data.NetRenderPod
+import com.project.data.StartUpExe
+import com.project.data.SystemMonitor
 import com.project.data.User
 import io.github.flaxoos.ktor.server.plugins.kafka.Kafka
 import io.github.flaxoos.ktor.server.plugins.kafka.MessageTimestampType
@@ -20,9 +29,14 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.bson.Document
+import org.bson.types.ObjectId
 import java.sql.Connection
 import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.DriverManager.println
+import kotlin.io.println
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = true)
@@ -100,6 +114,8 @@ fun Application.configureDatabases() {
             // MyRecord::class at myTopic // <-- Will register schema upon startup
         }
     }
+    Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver")
+
     val database = Database.connect(
         url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
         user = "root",
@@ -107,6 +123,24 @@ fun Application.configureDatabases() {
         password = "",
     )
     val userService = UserService(database)
+    transaction {
+        addLogger(StdOutSqlLogger)
+        SchemaUtils.create(Tasks)
+        val taskId = Tasks.insert {
+            it[name] = "Yuya"
+            it[description] = "Friends are cool."
+            it[command] = "default"
+            it[isCompleted] = false
+        } get Tasks.id
+
+        println("Created new tasks with ids $taskId.")
+
+        Tasks.select(Tasks.id.count(), Tasks.isCompleted).groupBy(Tasks.isCompleted).forEach {
+            println("${it[Tasks.isCompleted]}: ${it[Tasks.id.count()]} ")
+        }
+
+        println("Remaining tasks: ${Tasks.selectAll().toList()}")
+    }
     routing {
         // Create user
         post("/users") {
