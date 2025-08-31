@@ -114,7 +114,7 @@ fun Application.configureDatabases() {
             // MyRecord::class at myTopic // <-- Will register schema upon startup
         }
     }
-    Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver")
+    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAy=-1", driver = "org.h2.Driver")
 
     val database = Database.connect(
         url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
@@ -138,7 +138,6 @@ fun Application.configureDatabases() {
         Tasks.select(Tasks.id.count(), Tasks.isCompleted).groupBy(Tasks.isCompleted).forEach {
             println("${it[Tasks.isCompleted]}: ${it[Tasks.id.count()]} ")
         }
-
         println("Remaining tasks: ${Tasks.selectAll().toList()}")
     }
     routing {

@@ -31,7 +31,7 @@ class MongoUserDataSource(
 
 
     // create
-    override suspend fun insertUser(user: User): Boolean {
+    override suspend fun insertUser(user: User, nameToF: String): Boolean {
         val d = Document()
         d.values.addAll(arrayOf(user.id, user.username, user.password, user.__v))
         val result = users.insertOne(d)
@@ -40,7 +40,7 @@ class MongoUserDataSource(
 
     // get
     // need to make more overrides
-    suspend fun findUser(user: User, nameToF: String): Boolean {
+    override suspend fun findUser(user: User, nameToF: String): Boolean {
         val results = users.find(eq(user::username.name, nameToF))
 
         results.forEach { result ->
@@ -51,7 +51,7 @@ class MongoUserDataSource(
     }
 
     // delete
-    suspend fun deleteUser(user: User, nameToF: String): Boolean{
+    override suspend fun deleteUser(user: User, nameToF: String): Boolean{
         val results = users.findOneAndDelete(eq(user::username.name, nameToF))
         results?.forEach { result ->
             println(result)
@@ -61,7 +61,7 @@ class MongoUserDataSource(
     }
 
     // update
-    suspend fun updateUser(user: User, nameToF: String): Boolean {
+    override suspend fun updateUser(user: User, nameToF: String): Boolean {
         val d = Document()
         d.values.addAll(arrayOf(user.id, user.username, user.password, user.__v))
         val results = users.findOneAndUpdate(eq(user::username.name, nameToF), d)
