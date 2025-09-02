@@ -1,11 +1,14 @@
 package com.project
 
+import io.ktor.client.plugins.UserAgent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
+import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.collections.map
 
 // config for exposed UsersSchema
 @Serializable
@@ -37,22 +40,17 @@ class UserService(database: Database) {
     }
 
     suspend fun read(id: String?): ExposedUser? {
-//        return dbQuery {
-//            Users.selectAll()
-//                .where { Users.id.equals(id) }
-//                .map { ExposedUser(it[Users.name], it[Users.password]) }
-//                .singleOrNull()
-//        }
-        TODO()
+        var userRe = null;
+        return userRe
     }
 
     suspend fun update(id: String?, user: ExposedUser) {
-//        dbQuery {
-//            Users.update({ Users.id.equals(id) }) {
-//                it[name] = user.name
-//                it[password] = user.password
-//            }
-//        }
+        dbQuery {
+            Users.update({ Users.name like id.toString()}) {
+                it[name] = user.name
+                it[password] = user.password
+            }
+        }
     }
 
     suspend fun delete(id: String?) {
