@@ -1,16 +1,6 @@
 package com.project
 
 import com.mongodb.client.*
-import com.project.data.AIA
-import com.project.data.BT
-import com.project.data.CSA
-import com.project.data.Config
-import com.project.data.EmulationM
-import com.project.data.InstallType
-import com.project.data.NetRenderPod
-import com.project.data.StartUpExe
-import com.project.data.SystemMonitor
-import com.project.data.User
 import io.github.flaxoos.ktor.server.plugins.kafka.Kafka
 import io.github.flaxoos.ktor.server.plugins.kafka.MessageTimestampType
 import io.github.flaxoos.ktor.server.plugins.kafka.TopicName
@@ -29,14 +19,11 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.bson.Document
-import org.bson.types.ObjectId
 import java.sql.Connection
 import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.DriverManager.println
-import kotlin.io.println
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = true)
@@ -135,7 +122,8 @@ fun Application.configureDatabases() {
 
         println("Created new tasks with ids $taskId.")
 
-        Tasks.select(Tasks.id.count(), Tasks.isCompleted).groupBy(Tasks.isCompleted).forEach {
+        Tasks.select(Tasks.id.count(),
+            Tasks.isCompleted).groupBy(Tasks.isCompleted).forEach {
             println("${it[Tasks.isCompleted]}: ${it[Tasks.id.count()]} ")
         }
         println("Remaining tasks: ${Tasks.selectAll().toList()}")
@@ -151,7 +139,9 @@ fun Application.configureDatabases() {
         // Read user
         get("/users/{id}") {
             val id: String? = (call.parameters["id"])
-            val user = userService.read(id)
+            val username: String? = (call.parameters["username"])
+            val password: String? = (call.parameters["password"])
+            val user = userService.read(username, password)
             if (user != null) {
                 call.respond(HttpStatusCode.OK, user)
             } else {
