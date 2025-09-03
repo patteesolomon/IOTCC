@@ -27,6 +27,7 @@ import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.lock.redis.
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.http.*
+import io.ktor.http.cio.expectHttpBody
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -60,8 +61,6 @@ fun Application.configureRouting() {
 
         get("/iotDevices")
         {
-            // gets all Iot devices
-
         }
 
         get("/robotics")
@@ -71,6 +70,7 @@ fun Application.configureRouting() {
         }
 
         post("/users"){
+
         }
 
         post("/configSet")
@@ -87,9 +87,18 @@ fun Application.configureRouting() {
     }
 }
 
+suspend fun updateDoc(mdb: MongoDatabase, user :User){
+    val userUpdate = MongoUserDataSource(mdb)
+    // Update
+
+}
+
 suspend fun insertDoc(mdb : MongoDatabase, user : User) {
     val userInserter = MongoUserDataSource(mdb)
-    userInserter.insertUser(user)
+    userInserter.insertUser(
+        user,
+        user.username
+    )
 }
 
 suspend fun testInsertDoc(mdb: MongoDatabase, user: User){
