@@ -1,19 +1,15 @@
 package com.project
 
 import com.project.data.User
-import io.ktor.client.plugins.UserAgent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.selects.select
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
+import org.bson.conversions.Bson
 import org.bson.types.ObjectId
-import org.jetbrains.exposed.dao.id.CompositeID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.UUID
-import kotlin.collections.map
 
 // config for exposed UsersSchema
 @Serializable
@@ -51,13 +47,13 @@ class UserService(database: Database) {
         return allUsers
     }
 
-    suspend fun read(id: ObjectId, name: String, password: String): Query {
-        val userNew = User(id, name, password, 0)
+    suspend fun read(name: String?, password: String?): Query {
+        val userNew = User(id = ObjectId(),name as String, password as String, __v = 0)
         val qn = { Users.select(Users.name).where(Users.name eq userNew.username) }
         return qn as Query
     }
 
-    suspend fun update(id: ObjectId?, user: ExposedUser) {
+    suspend fun update(id: String?, user: ExposedUser) {
         dbQuery {
             Users.update({ Users.name like id.toString()}) {
                 it[name] = user.name
@@ -66,7 +62,7 @@ class UserService(database: Database) {
         }
     }
 
-    suspend fun delete(id: ObjectId?) {
+    suspend fun delete(id: String?) {
         dbQuery {
         }
     }
