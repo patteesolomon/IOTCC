@@ -1,6 +1,7 @@
 package com.project
 
 import com.mongodb.client.*
+import com.project.data.User
 import io.github.flaxoos.ktor.server.plugins.kafka.Kafka
 import io.github.flaxoos.ktor.server.plugins.kafka.MessageTimestampType
 import io.github.flaxoos.ktor.server.plugins.kafka.TopicName
@@ -19,6 +20,7 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.bson.types.ObjectId
 import java.sql.Connection
 import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
@@ -46,6 +48,7 @@ fun Application.configureDatabases() {
                 call.respond(HttpStatusCode.OK, command)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound)
+                println(e)
             }
         }
 
@@ -64,7 +67,7 @@ fun Application.configureDatabases() {
             call.respond(HttpStatusCode.OK)
         }
     }
-    val mongoDatabase = connectToMongoDB()
+    connectToMongoDB()
 
     install(Kafka) {
         schemaRegistryUrl = "my.schemaRegistryUrl"
@@ -128,6 +131,7 @@ fun Application.configureDatabases() {
         }
         println("Remaining tasks: ${Tasks.selectAll().toList()}")
     }
+    @Suppress("lowercase")
     routing {
         // Create user
         post("/users") {
@@ -135,32 +139,35 @@ fun Application.configureDatabases() {
             val id = userService.create(user)
             call.respond(HttpStatusCode.Created, id)
         }
+
+        get("/users"){
+            call.respond(HttpStatusCode.OK, userService.readAll())
+        }
         
         // Read user
         get("/users/{id}") {
-            val id: String? = (call.parameters["id"])
             val username: String? = (call.parameters["username"])
             val password: String? = (call.parameters["password"])
             val user = userService.read(username, password)
-            if (user != null) {
-                call.respond(HttpStatusCode.OK, user)
-            } else {
-                call.respond(HttpStatusCode.NotFound)
-            }
+            call.respond(HttpStatusCode.OK, user)
         }
         
         // Update user
         put("/users/{id}") {
-            val id: String? = call.parameters["id"]
-            val user = call.receive<ExposedUser>()
-            userService.update(id, user)
+            val ps = call.parameters["password"]
+            val user = call.parameters["username"]
+            val v = call.parameters["__v"]
+            val n = v ?: 0
+            val userNew = User(id = ObjectId(),user, ps, n)
+            userService.update(userNew)
             call.respond(HttpStatusCode.OK)
         }
         
         // Delete user
         delete("/users/{id}") {
-            val id = call.parameters["id"]
-            userService.delete(id)
+            val username = call.parameters["username"]
+            val ps = call.parameters["password"]
+            userService.delete(username, ps)
             call.respond(HttpStatusCode.OK)
         }
     }
@@ -186,6 +193,7 @@ fun Application.configureDatabases() {
  * @return [Connection] that represent connection to the database. Please, don't forget to close this connection when
  * your application shuts down by calling [Connection.close]
  * */
+@Suppress("KDocUnresolvedReference")
 fun Application.connectToPostgres(embedded: Boolean): Connection {
     Class.forName("org.postgresql.Driver")
     if (embedded) {
@@ -214,7 +222,7 @@ fun Application.connectToPostgres(embedded: Boolean): Connection {
  *
  * IMPORTANT NOTE: in order to make MongoDB connection working, you have to start a MongoDB server first.
  * See the instructions here: https://www.mongodb.com/docs/manual/administration/install-community/
- * all the paramaters above
+ * all the parameters above
  *
  * @returns [MongoDatabase] instance
  * */

@@ -1,9 +1,7 @@
 package com.project
 
-import com.google.common.hash.Hashing.sha256
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.Updates
@@ -31,7 +29,7 @@ class MongoUserDataSource(
 
 
     // create
-    override suspend fun insertUser(user: User, nameToF: String): Boolean {
+    override suspend fun insertUser(user: User): Boolean {
         val d = Document()
         d.values.addAll(arrayOf(user.id, user.username, user.password, user.__v))
         val result = users.insertOne(d)
@@ -40,8 +38,8 @@ class MongoUserDataSource(
 
     // get
     // need to make more overrides
-    override suspend fun findUser(user: User, nameToF: String): Boolean {
-        val results = users.find(eq(user::username.name, nameToF))
+    override suspend fun findUser(user: User): Boolean {
+        val results = users.find(eq(user::username.name))
 
         results.forEach { result ->
             println(result)
@@ -51,8 +49,8 @@ class MongoUserDataSource(
     }
 
     // delete
-    override suspend fun deleteUser(user: User, nameToF: String): Boolean{
-        val results = users.findOneAndDelete(eq(user::username.name, nameToF))
+    override suspend fun deleteUser(user: User): Boolean{
+        val results = users.findOneAndDelete(eq(user::username.name))
         results?.forEach { result ->
             println(result)
         }
@@ -61,10 +59,10 @@ class MongoUserDataSource(
     }
 
     // update
-    override suspend fun updateUser(user: User, nameToF: String): Boolean {
+    override suspend fun updateUser(user: User): Boolean {
         val d = Document()
         d.values.addAll(arrayOf(user.id, user.username, user.password, user.__v))
-        val results = users.findOneAndUpdate(eq(user::username.name, nameToF), d)
+        val results = users.findOneAndUpdate(eq(user::username.name), d)
         results?.forEach { result ->
             println(result)
         }
