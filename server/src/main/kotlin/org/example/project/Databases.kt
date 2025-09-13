@@ -20,15 +20,18 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
 import org.bson.types.ObjectId
 import java.sql.Connection
 import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import java.sql.DriverManager.println
 
 fun Application.configureDatabases() {
-    val dbConnection: Connection = connectToPostgres(embedded = true)
+    val dbConnection: Connection = connectToPostgres(embedded = false)
     val commandService = CommandService(dbConnection)
 
     routing {
@@ -67,7 +70,7 @@ fun Application.configureDatabases() {
             call.respond(HttpStatusCode.OK)
         }
     }
-    connectToMongoDB()
+
 
     install(Kafka) {
         schemaRegistryUrl = "my.schemaRegistryUrl"
@@ -104,13 +107,13 @@ fun Application.configureDatabases() {
             // MyRecord::class at myTopic // <-- Will register schema upon startup
         }
     }
-    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAy=-1", driver = "org.h2.Driver")
+    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
 
     val database = Database.connect(
         url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
         user = "root",
         driver = "org.h2.Driver",
-        password = "",
+        password = ""
     )
     val userService = UserService(database)
     transaction {
@@ -131,6 +134,7 @@ fun Application.configureDatabases() {
         }
         println("Remaining tasks: ${Tasks.selectAll().toList()}")
     }
+    connectToMongoDB()
     @Suppress("lowercase")
     routing {
         // Create user
@@ -195,18 +199,29 @@ fun Application.configureDatabases() {
  * */
 @Suppress("KDocUnresolvedReference")
 fun Application.connectToPostgres(embedded: Boolean): Connection {
+    val hostn = environment.config.property("postgres.hostname").getString()
+    val dbName = environment.config.property("postgres.dbName").getString()
+    val portNum = environment.config.property("postgres.port").getString()
+    val url = System.getenv("postgres.url").toString()
+
     Class.forName("org.postgresql.Driver")
     if (embedded) {
         log.info("Using embedded H2 database for testing; replace this flag to use postgres")
         return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "root", "")
     } else {
-        val url = environment.config.property("postgres.url").getString()
-        log.info("Connecting to postgres database at $url")
-        val user = environment.config.property("postgres.user").getString()
-        val password = environment.config.property("postgres.password").getString()
-
-        return DriverManager.getConnection(url, user, password)
+        val database = Database.connect(
+            url = System.getenv("postgres.url").toString(),
+            driver = "org.postgresql.Driver",
+            user = System.getenv("postgres.user").toString(),
+            password = System.getenv("postgres.password").toString()
+        )
+        transaction (database) {
+            SchemaUtils.create(Tasks)
+        }
+        suspend fun <T> dbQuery(block: suspend () -> T): T =
+            newSuspendedTransaction(Dispatchers.IO) { block() }
     }
+    return DriverManager.getConnection(url)
 }
 
 /**
